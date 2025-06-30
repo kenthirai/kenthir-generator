@@ -6,22 +6,29 @@ export default function Home() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // Jika sudah login, langsung arahkan ke generator
   if (status === "authenticated") {
     router.push('/generator');
-    return null; // Tampilkan halaman kosong selama redirect
+    return null;
   }
 
   return (
-    <div>
+    <div className="bg-slate-200">
       <Navbar />
-      <main style={{ textAlign: 'center', padding: '4rem' }}>
-        <h1>Selamat Datang di Kenthir AI Image Generator</h1>
-        <p>Platform AI Generatif Terbuka Paling Mudah Diakses.</p>
-        <p>Silakan login untuk mulai membuat karya seni digital Anda.</p>
-        <button onClick={() => signIn()} style={{ padding: '10px 20px', fontSize: '1.2rem', marginTop: '20px' }}>
-          Login untuk Memulai
-        </button>
+      <main className="flex items-center justify-center min-h-screen -mt-16">
+        <div className="text-center p-10 bg-slate-200 rounded-2xl shadow-neumorphic">
+          <h1 className="text-4xl font-bold text-slate-700 mb-4">
+            Kenthir AI Image Generator
+          </h1>
+          <p className="text-slate-500 mb-8">
+            Platform AI Generatif Terbuka Paling Mudah Diakses.
+          </p>
+          <button
+            onClick={() => signIn()}
+            className="px-8 py-3 bg-slate-200 text-slate-800 font-semibold rounded-xl shadow-neumorphic hover:shadow-neumorphic-inset transition-all duration-200"
+          >
+            Login untuk Memulai
+          </button>
+        </div>
       </main>
     </div>
   );

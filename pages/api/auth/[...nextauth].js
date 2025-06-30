@@ -11,24 +11,26 @@ export default NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID, // 
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET, // 
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
     GithubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID, // 
-      clientSecret: process.env.GITHUB_CLIENT_SECRET, // 
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
     }),
     FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID, // 
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET, // 
+      clientId: process.env.FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET, // 
+  pages: {
+    signIn: '/auth/login',
+  },
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
   callbacks: {
-    // Callback ini digunakan untuk memasukkan ID user dan koin ke dalam token sesi
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -36,25 +38,18 @@ export default NextAuth({
       }
       return token;
     },
-    // Callback ini digunakan untuk memberikan data dari token ke komponen client
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
-        session.user.coins = token.coins;
-      }
-      // Ambil data koin terbaru dari database
-      const currentUser = await prisma.user.findUnique({
-        where: { id: token.id },
-        select: { coins: true },
-      });
-      if (currentUser) {
-        session.user.coins = currentUser.coins;
+        const currentUser = await prisma.user.findUnique({
+          where: { id: token.id },
+          select: { coins: true },
+        });
+        if (currentUser) {
+          session.user.coins = currentUser.coins;
+        }
       }
       return session;
     },
   },
-  pages: {
-    signIn: '/#login', // Jika login gagal atau diperlukan, arahkan ke landing page dengan hash #login
-    error: '/#login', // Jika ada error, arahkan ke landing page juga
-  }
 });
